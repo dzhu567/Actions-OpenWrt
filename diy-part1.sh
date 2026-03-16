@@ -13,9 +13,11 @@
 
 
 # Add a feed source
- git clone https://github.com/QC3284/luci-app-uugamebooster.git package/luci-app-uugamebooster
+git clone https://github.com/ximiTech/luci-app-msd_lite.git package/luci-app-msd_lite
+git clone https://github.com/Openwrt-Passwall/openwrt-passwall.git package/luci-app-passwall
+git clone https://github.com/stackia/rtp2httpd.git package/luci-app-rtp2httpd
 #git clone https://github.com/leshanydy2022/luci-app-adguardhome.git package/luci-app-adguardhome
-＃git clone https://github.com/sirpdboy/luci-app-lucky.git package/lucky
+git clone https://github.com/sirpdboy/luci-app-lucky.git package/lucky
 #git clone https://github.com/dzhuqi/mysql.git package/mysql
 # 替换默认主题
 #rm -rf package/lean/luci-theme-argon 
