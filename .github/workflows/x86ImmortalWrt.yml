@@ -166,36 +166,21 @@ jobs:
  
 
     - name: 生成固件标签
-      id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-        touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "{name}={value}" >> $GITHUB_STATE
-
-    - name: 发布固件
-      uses: ncipollo/release-action@v1.20.0
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      run: bash scripts/generate-firmware-tag.sh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
-
-    - name: 删除工作环境
-      uses: GitRML/delete-workflow-runs@main
-      with:
-        retain_days: 1
-        keep_minimum_runs: 3
-
-    - name: 删除旧版本
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      with:
-        keep_latest: 3
-        delete_tags: true
+        
+    - name: 发布新固件版本
+      run: |
+        TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+        bash scripts/publish-release.sh "$TAG" "新版固件发布" "本次更新包含重要修复和改进" "./output/firmware.bin"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: 清理工作区
+      run: bash scripts/cleanup-workspace.sh
+      
+    - name: 删除过期版本
+      run: bash scripts/delete-old-releases.sh 3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
